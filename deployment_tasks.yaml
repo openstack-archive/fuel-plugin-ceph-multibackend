@@ -1,0 +1,73 @@
+- id: fp-ceph_multibackend-regions
+  role: ['primary-controller']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/regions.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 360
+  requires: [post_deployment_start]
+  required_for: [ceph_ready_check,upload_cirros]
+- id: fp-ceph_multibackend-keys
+  role: ['ceph-backend2']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/keys.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 300
+  requires: [post_deployment_start,ceph_create_pools]
+  required_for: [upload_cirros,fp-ceph_multibackend-ceph-storage]
+- id: fp-ceph_multibackend-ceph-storage
+  role: ['ceph-backend2']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/osd.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1500
+  requires: [post_deployment_start,ceph_create_pools,fp-ceph_multibackend-keys]
+  required_for: [upload_cirros,fp-ceph_multibackend-ceph-osd-id]
+- id: fp-ceph_multibackend-ceph-osd-id
+  role: ['ceph-backend2']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/osd_id.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 360
+  requires: [post_deployment_start,ceph_create_pools,fp-ceph_multibackend-ceph-storage,fp-ceph_multibackend-regions]
+  required_for: [fp-ceph_multibackend-ceph-primary,upload_cirros]
+- id: fp-ceph_multibackend-ceph-primary
+  role: ['primary-controller']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/ceph_primary.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 360
+  requires: [post_deployment_start,ceph_create_pools,fp-ceph_multibackend-ceph-storage,fp-ceph_multibackend-ceph-osd-id]
+  required_for: [ceph_ready_check,upload_cirros]
+  cross-depends:
+    - name: fp-ceph_multibackend-ceph-osd-id
+      role: ['ceph-backend2']
+- id: fp-ceph_multibackend-ceph-controller
+  role: ['primary-controller','controller']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/controller.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 360
+  requires: [post_deployment_start,ceph_create_pools]
+  required_for: [upload_cirros]
+- id: fp-ceph_multibackend-ceph-auth-update
+  role: ['primary-controller']
+  type: puppet
+  version: 2.0.0
+  parameters:
+    puppet_manifest: puppet/manifests/ceph_auth.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 360
+  requires: [post_deployment_start,ceph-compute]
+  required_for: [upload_cirros]

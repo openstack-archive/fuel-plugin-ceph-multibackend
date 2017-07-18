@@ -1,0 +1,21 @@
+attributes:
+  metadata:
+    group: 'storage'
+  ceph_pool:
+    value: "SSD"
+    label: "Ceph pool name"
+    description: "Ceph pool name"
+    weight: 50
+    type: "text"
+  ceph_ssd_pg_num:
+    value: "1024"
+    label: "Number of Ceph placement group for SSD pool"
+    description: "osd_count*100/replica_count rounded to nearest power of two"
+    weight: 51
+    type: "text"
+  ceph_hdd_pg_num:
+    value: "8192"
+    label: "Number of Ceph placement group for HDD pool"
+    description: "osd_count*100/replica_count rounded to nearest power of two"
+    weight: 52
+    type: "text"
