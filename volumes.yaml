@@ -1,0 +1,14 @@
+volumes:
+  - id: "ceph-backend2"
+    type: "partition"
+    min_size: 
+      generator: "calc_gb_to_mb"
+      generator_args: [2]
+    label: "Ceph Glance Backend"
+    mount: "none"
+    file_system: "xfs"
+
+volumes_roles_mapping:
+  ceph-backend2:
+    - {allocate_size: "min", id: "os"}
+    - {allocate_size: "all", id: "ceph-backend2"}
