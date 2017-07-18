@@ -1,0 +1,12 @@
+- name: 'storage:image:ceph2'
+  label: 'Ceph SSD'
+  description: 'Separate osd pool for Ceph Images. Requires Ceph Image Storage option.'
+  requires: 
+    - name: 'storage:image:ceph'
+  compatible:
+    - name: 'hypervisor:libvirt:*'
+    - name: 'storage:block:ceph'
+    - name: 'storage:object:ceph'
+    - name: 'storage:image:ceph'
+    - name: 'storage:ephemeral:ceph'
+

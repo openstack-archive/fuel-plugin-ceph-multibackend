@@ -1,0 +1,6 @@
+ceph-backend2:
+  name: "Ceph SSD"
+  description: Ceph SSD backend
+  has_primary: false
+  public_ip_required: false
+  weight: 100
